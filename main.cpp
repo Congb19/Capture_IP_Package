@@ -4,7 +4,6 @@
 
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
-
 #include <iostream>
 #include <winsock2.h>
 #include <windows.h>
@@ -12,14 +11,13 @@
 #include <mstcpip.h>
 #include <string>
 #pragma comment(lib,"Ws2_32.lib")
-
 using namespace std;
 struct IP_head //IP首部
 {
-    BYTE version_len;			// IP协议版本和IP首部长度。高4位为版本，低4位为首部的长度(单位为4B)
+    BYTE version_len;			// IP协议版本和IP首部长度
     BYTE ser_type;				// 服务类型
-    WORD wPacketLen;			// IP包总长度。包括首部，单位为byte。[Big endian]
-    WORD identification;		// 标识，一般每个IP包的序号递增。[Big endian]
+    WORD wPacketLen;			// IP包的总长度
+    WORD identification;		// 标识  一般递增
     union
     {
         WORD flag;				// 标志
@@ -27,7 +25,7 @@ struct IP_head //IP首部
     };
     BYTE TTL;					// 生存时间
     BYTE Protocol_Type;			// 协议类型，见PROTOCOL_TYPE定义
-    WORD Head_checksum;			// IP首部校验和[Big endian]
+    WORD Head_checksum;			// IP首部校验和
     DWORD Source_ip;			// 源地址
     DWORD Destination_ip;       // 目的地址
     BYTE Options;				// 选项
@@ -73,7 +71,7 @@ int main()
         cout << "WSAStartup函数错误！" << endl;
         return -1;
     }
-    atexit(AutoWSACleanup);	// atexit函数是在正常程序退出时调用的登记函数
+    atexit(AutoWSACleanup);	// atexit()函数是在正常程序退出时调用的登记函数
     // WSACleanup()功能是终止Winsock 2 DLL(Ws2_32.dll) 的使用
     // 创建SOCKET
     SOCKET sock = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
@@ -103,7 +101,7 @@ int main()
         cout << WSAGetLastError();
         return 0;
     }
-    // 设置该SOCKET为接收所有流经绑定的IP的网卡的所有数据，包括接收和发送的数据包
+    // 设置该SOCKET为接收所有流经绑定的IP的网卡的所有数据 包括接收和发送的数据包
     u_long sioarg = 1;
     DWORD wt = 0;
     if (SOCKET_ERROR == WSAIoctl(sock, SIO_RCVALL, &sioarg, sizeof(sioarg), NULL, 0, &wt, NULL, NULL))// WSAIoctl()控制一个套接口的模式
@@ -112,7 +110,7 @@ int main()
         cout << WSAGetLastError();
         return 0;
     }
-    // 只需要接收数据，因此设置为阻塞IO，使用最简单的IO模型
+    // 只需要接收数据 因此设置为阻塞IO 使用最简单的IO模型
     u_long bioarg = 0;
     if (SOCKET_ERROR == ioctlsocket(sock, FIONBIO, &bioarg))// ioctlsocket()功能是控制套接口的模式
     {
@@ -121,14 +119,14 @@ int main()
         return 0;
     }
     // 开始接收数据
-    // 因为前面已经设置为阻塞IO，recv在接收到数据前不会返回。
+    // 因为前面已经设置为阻塞IO，recv在接收到数据前不会返回
     cnt = 1;
     char buf[65535];
     int len = 0;
     string temp;
     do
     {
-        len = recv(sock, buf, sizeof(buf), 0);// 用recv函数从TCP连接的另一端接收数据
+        len = recv(sock, buf, sizeof(buf), 0);// 用recv()函数从TCP连接的另一端接收数据
         if (len > 0)
         {
             Get_IPdata(buf, len);
@@ -139,4 +137,5 @@ int main()
     } while (len > 0);
     closesocket(sock);
     system("pause");
+    return 0;
 }

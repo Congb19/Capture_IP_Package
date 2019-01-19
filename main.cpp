@@ -65,7 +65,7 @@ int main()
 {
     int n;
     WSADATA wd;	// 用来存储被WSAStartup函数调用后返回的Windows Sockets数据
-    n = WSAStartup(MAKEWORD(2, 2), &wd); // WSAStartup：进行相应的socket库绑定
+    n = WSAStartup(MAKEWORD(2, 2), &wd); // WSAStartup() 进行相应的socket库绑定
     if (n)
     {
         cout << "WSAStartup函数错误！" << endl;
